@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PlacedObjects : MonoBehaviour {
 
-	protected List<string> listObjects = new List<string>();
-	protected List<Vector2> positionObjects = new List<Vector2>();
-    protected int capacity = 3;
+	protected List<List<string>> listObjects = new List<List<string>>();
+	protected List<List<Vector2>> positionObjects = new List<List<Vector2>>();
 
+	static int nbList = -1;
 	static PlacedObjects instance;
 
 	void Start(){
@@ -15,36 +15,45 @@ public class PlacedObjects : MonoBehaviour {
 		if (instance != null) {
 			Destroy (this.gameObject);
 			return; 
-		}
+		} 
 
 		instance = this;
 
 		DontDestroyOnLoad (gameObject);
 	}
-
 		
-    public void AddObject(string obj)
+	public void NewList(){
+		listObjects.Add (new List<string> ());
+		positionObjects.Add (new List<Vector2> ());
+		nbList++;
+	}
+
+	public int GetNbList(){
+		return nbList;
+	}
+
+    public void AddObject(int id, string obj)
     {
-        listObjects.Add(obj);
+		listObjects[id].Add(obj);
     }
 
-    public void AddPosition(Vector2 pos)
+    public void AddPosition(int id, Vector2 pos)
     {
-        this.positionObjects.Add(pos);
+        this.positionObjects[id].Add(pos);
     }
 		
-    public string GetObject(int ind)
+    public string GetObject(int id, int ind)
     {
-        return this.listObjects[ind];
+		return this.listObjects[id][ind];
     }
 
-    public Vector2 GetPosition(int ind)
+    public Vector2 GetPosition(int id, int ind)
     {
-        return this.positionObjects[ind];
+		return this.positionObjects[id][ind];
     }
 	
-    public bool IsIn(Vector2 pos)
+	public bool IsIn(int id, Vector2 pos)
     {
-        return this.positionObjects.Contains(pos);
+		return this.positionObjects[id].Contains(pos);
     }
 }
