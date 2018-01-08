@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 5f8cf9e4fdc837b4e9b5f8470cb0ac17
+timeCreated: 1514820586
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: PWScolarpaper
+  fontNames:
+  - PWScolarpaper
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
