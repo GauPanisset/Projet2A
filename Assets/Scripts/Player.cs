@@ -34,8 +34,6 @@ public class Player : MonoBehaviour {
 		return (int)(Mathf.Exp (-Mathf.Pow (sqrDist / para, 2)) * scoreMax);
 	}
 
-
-
 	public void ChangeScore(int s){
 		score += s;
 	}
