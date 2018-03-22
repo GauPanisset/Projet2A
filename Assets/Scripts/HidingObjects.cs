@@ -5,7 +5,12 @@ using UnityEngine.UI;
 
 public class HidingObjects : MonoBehaviour {
 
-	public Transform mark;
+	public GameObject button;
+	public GameObject canvas;
+
+	private int w_canvas;
+	private int h_canvas;
+
 	public string typeObject = null;
 
     public KeyCode clic;
@@ -39,6 +44,10 @@ public class HidingObjects : MonoBehaviour {
 		po = go.GetComponent<PlacedObjects>();
 		po.NewList ();
 		id = po.GetNbList ();
+
+		RectTransform objectRectTransform = canvas.GetComponent<RectTransform> ();
+		h_canvas = (int) objectRectTransform.rect.height;
+		w_canvas = (int) objectRectTransform.rect.width;
 	}
 
 	// Update is called once per frame
@@ -52,7 +61,9 @@ public class HidingObjects : MonoBehaviour {
 			po.AddPosition (id, mousePosition);
 			po.AddObject(id, typeObject);
 			counter++;
-			Instantiate (mark, new Vector3(obj[0], obj[1], -1), mark.rotation);
+			GameObject newButton = Instantiate(button, new Vector3((screenPosition[0] - 0.5f) * w_canvas, (screenPosition[1] - 0.5f) * h_canvas, -1), new Quaternion(0, 0, 0, 0)) as GameObject;
+			newButton.transform.SetParent(canvas.transform, false);
+			//Instantiate (mark, new Vector3(obj[0], obj[1], -1), mark.rotation);
 			nbObjectsText.text = counter + "/" + nbObjects;
 		}
 	}
