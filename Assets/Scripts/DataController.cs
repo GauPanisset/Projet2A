@@ -1,27 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SimpleJSON;
 using UnityEngine.Networking;
-using System.Linq;
 
 
 public class DataController : MonoBehaviour {
 
 	public string url; //"http://localhost:3131"
-	//public ArrayList selectdata;
+
+	public int id;
 	public string username;
-	public string password;
+	public string objects;
+	public string pos;
+	public string circuits;
+	public int level;
+	public int score;
 
 	public string result;
 
 	void Start(){
-		//selectdata = new ArrayList();
-		//StartCoroutine (SelectData ("admin"));
 	}
-		
 
-	IEnumerator SendDataGet(string username){
+	IEnumerator RequestGetPlayers (string username){
 		string request = url + "/" + WWW.EscapeURL (username);
 		UnityWebRequest www = UnityWebRequest.Get (request); 
 
@@ -37,75 +37,95 @@ public class DataController : MonoBehaviour {
 		} else {
 			Debug.Log ("Can't get");
 		}
-		/*Parsing with JSON
+	}		
 
-		} else if (data.text != "") {
-			JSONArray parsed_data = JSON.Parse (data.text).AsArray;
-			foreach (KeyValuePair<string, SimpleJSON.JSONNode>row in parsed_data) {			//var
-				selectdata.Add (row);
-			}
-		}*/
+	IEnumerator RequestGetFlats (int id){
+		string request = url + "/flats/" + id;					//url of the request
+		UnityWebRequest www = UnityWebRequest.Get (request); 	//create the GET request
+
+		yield return www.SendWebRequest ();
+
+		if (www.isNetworkError || www.isHttpError) {			//Error managment
+			Debug.Log (www.error);
+		} else if ((result = www.downloadHandler.text) != "") {
+			result = www.downloadHandler.text;
+			Debug.Log (result); 
+		} else {
+			Debug.Log ("Can't get");
+		}
 	}
 		
-	IEnumerator SendDataPost(string username, string password){
-		WWWForm form = new WWWForm ();
+	IEnumerator RequestPostFlats(string src, string objects, string pos, string circuits){
+		string request = url + "/flats";						//url of the request
 
-		form.AddField ("username", username);
-		form.AddField ("password", password);
+		WWWForm form = new WWWForm ();							//create the body of the request
 
-		Dictionary<string, string> headers = form.headers;
-		Debug.Log (headers ["Content-Type"]);
-		/*if (headers.ContainsKey ("Content-Type")) {
-			headers ["Content-Type"] = "application/x-www-form-urlencoded";
-		} else {
-			headers.Add ("Content-Type", "application/x-www-form-urlencoded");
-		}*/
+		form.AddField ("url", src);
+		form.AddField ("objects", objects);
+		form.AddField ("pos", pos);
+		form.AddField ("circuits", circuits);
 
-		WWW data = new WWW (url, form.data, headers); 
+		UnityWebRequest www = UnityWebRequest.Post (request, form);			//create the POST request
 
-		yield return data;
+		yield return www.SendWebRequest();						 
 
-		if (data.error != null) {
-			Debug.Log (data.error);
-		}
-
-		/*UnityWebRequest www = UnityWebRequest.Post (url, form);
-
-		yield return www.SendWebRequest();
-
-		if (www.isNetworkError || www.isHttpError) {
+		if (www.isNetworkError || www.isHttpError) {			//Error managment
 			Debug.Log (www.error);
 		} else {
 			Debug.Log ("Form uplaod complete!");
-		}*/
+		}
 	}
 
-	/*	Obsolete
-	 * public IEnumerator SelectData(string username){
-		
-		WWWForm form = new WWWForm ();
-		form.AddField ("username", username);
-		WWW data_get = new WWW (url, form);
-		yield return data_get;
-		Debug.Log (data_get.text);
-		if (data_get.error != null) {
-			Debug.Log (data_get.error);
-		} else if (data_get.text != "") {
-			var parsed_data = JSON.Parse (data_get.text).AsArray;
-			foreach (var row in parsed_data) {
-				this.selectdata.Add (row);
-			}
-			Debug.Log (selectdata.ToString ());
+	IEnumerator RequestPostPlayers(string username, int level, int score, int flat){
+		string request = url + "/players";			//url of the request
+
+		WWWForm form = new WWWForm ();				//create the body of the request
+
+		form.AddField ("name", username);
+		form.AddField ("level", level);
+		form.AddField ("score", score);
+		form.AddField ("flat", flat);
+
+		UnityWebRequest www = UnityWebRequest.Post (request, form);			//create the POST request
+
+		yield return www.SendWebRequest();
+
+		if (www.isNetworkError || www.isHttpError) {			//Error managment
+			Debug.Log (www.error);
+		} else {
+			Debug.Log ("Form uplaod complete!");
 		}
-	}*/
+	}
+
+	IEnumerator RequestPatchPlayersScore(string username, int score){
+		string request = url + "/players/score/" + WWW.EscapeURL (username);		//url of the request
+
+		WWWForm form = new WWWForm ();							//create the body of the request
+		form.AddField ("score", score);
+
+		UnityWebRequest www = UnityWebRequest.Post (request, form);			//create the PATCH request with a POST request
+																			//content-type : application/x-www-form-urelencoded
+		Debug.Log (request);
+		yield return www.SendWebRequest ();
+
+		if (www.isNetworkError || www.isHttpError) {			//Error managment
+			Debug.Log (www.error);
+		} else {
+			Debug.Log ("Form uplaod complete!");
+		}
+	}
 
 	void OnGUI(){
 		if (GUI.Button (new Rect (20, 250, 100, 30), "Get")) {
-			StartCoroutine(SendDataGet (username));
+			StartCoroutine(RequestGetPlayers (username));
 		}
 		if (GUI.Button (new Rect (150, 250, 100, 30), "Post")) {
-			StartCoroutine (SendDataPost (username, password));
+			StartCoroutine (RequestPostPlayers (username, level, score, id));
+		}
+		if (GUI.Button (new Rect (280, 250, 100, 30), "Patch")) {
+			StartCoroutine(RequestPatchPlayersScore(username, score));
 		}
 	}
 }
+
 

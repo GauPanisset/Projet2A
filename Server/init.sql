@@ -9,16 +9,16 @@ CREATE TABLE PLAYERS(
 CREATE TABLE FLATS(
     ID INTEGER PRIMARY KEY   AUTOINCREMENT,
     URL TEXT,
-    OBJECTS ENUM('A', 'B', 'C'),
-    POS ENUM('X', 'Y', 'Z', 'T', 'U', 'V'),
-    CIRCUITS ENUM('A', 'B', 'C')
+    OBJECTS TEXT,       --"obj1;obj2;obj3, ..." obj -> int
+    POS TEXT,           --"x1;y1;x2;y2;..."
+    CIRCUITS TEXT       --"id1;id2;id3;..."
 );
 
 CREATE TABLE CIRCUITS(
     ID INTEGER PRIMARY KEY   AUTOINCREMENT,
     URL TEXT,
-    OBJECTS ENUM('A', 'B', 'C'),
-    POS ENUM('X', 'Y', 'Z', 'T', 'U', 'V'),
+    OBJECTS TEXT,       --"obj1;obj2;obj3, ..." obj -> int
+    POS TEXT            --"x1;y1;x2;y2;..."
 );
 
 
