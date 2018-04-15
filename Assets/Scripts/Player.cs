@@ -6,7 +6,10 @@ public class Player : MonoBehaviour {
 
 	protected int score = 0;
 	protected int level = 1;
-	protected List<string> evolution; //Not used
+	protected int flat = 0;
+	public string username = "admin";
+
+	private DataController data;
 
 	static Player instance;
 
@@ -21,7 +24,8 @@ public class Player : MonoBehaviour {
 
 		DontDestroyOnLoad (gameObject);
 	}
-	
+
+
 	// Update is called once per frame
 	void Update () {
 		

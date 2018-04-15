@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,8 +8,6 @@ public class Unlock : MonoBehaviour {
 	public Transform tick;
 
 	public PlacedObjects po;
-	public List<string> listObjects;
-	public List<Vector2> listPositions;
 	public int id;
 
 	public string typeObject = null;
@@ -38,13 +36,7 @@ public class Unlock : MonoBehaviour {
 			return;
 		}
 
-		po = go.GetComponent<PlacedObjects>();
-		id = Random.Range (0, po.GetNbList () + 1);
-
-		for (int i = 0; i < nbObjects; i++) {
-			listObjects.Add (po.GetObject (id, i));
-			listPositions.Add (po.GetPosition (id, i));
-		}
+		po = go.AddComponent<PlacedObjects>();
 
 		GameObject go2 = GameObject.Find ("Timer");
 		if(go2 == null){
@@ -82,7 +74,6 @@ public class Unlock : MonoBehaviour {
 						counter++;
 						Instantiate (tick, new Vector3(obj[0], obj[1], -1), tick.rotation);
 						nbObjectsText.text = counter + "/" + nbObjects;
-						int ind = listObjects.IndexOf(typeObject);
 						listObjects.Remove (typeObject);
 						listPositions.RemoveAt (ind);
 						DisableToggle ();
@@ -146,3 +137,4 @@ public class Unlock : MonoBehaviour {
 	}
 
 }
+*/

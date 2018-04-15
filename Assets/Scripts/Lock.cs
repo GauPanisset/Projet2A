@@ -35,8 +35,6 @@ public class Lock : MonoBehaviour {
 		}
 
 		po = go.GetComponent<PlacedObjects>();
-		po.NewList ();
-		id = po.GetNbList ();
 	}
 
 	// Update is called once per frame
@@ -47,8 +45,8 @@ public class Lock : MonoBehaviour {
 		Vector2 screenPosition = Camera.main.ScreenToViewportPoint (mousePosition);
 		SetTypeObject ();
 		if (Input.GetKeyDown(clic) && screenPosition [0] < 0.8 && typeObject != null  && counter < nbObjects) { 	//Check if the clic is on the GamePanel. Check if one specific object is active.
-			po.AddPosition (id, mousePosition);
-			po.AddObject(id, typeObject);
+			po.AddPosition (mousePosition);
+			po.AddObject(typeObject);
 			counter++;
 			Instantiate (locks, new Vector3(obj[0], obj[1], -1), locks.rotation);
 			nbObjectsText.text = counter + "/" + nbObjects;

@@ -9,7 +9,7 @@ CREATE TABLE PLAYERS(
 CREATE TABLE FLATS(
     ID INTEGER PRIMARY KEY   AUTOINCREMENT,
     URL TEXT,
-    OBJECTS TEXT,       --"obj1;obj2;obj3, ..." obj -> int
+    OBJECTS TEXT,       --"obj1;obj2;obj3, ..."
     POS TEXT,           --"x1;y1;x2;y2;..."
     CIRCUITS TEXT       --"id1;id2;id3;..."
 );
@@ -17,7 +17,7 @@ CREATE TABLE FLATS(
 CREATE TABLE CIRCUITS(
     ID INTEGER PRIMARY KEY   AUTOINCREMENT,
     URL TEXT,
-    OBJECTS TEXT,       --"obj1;obj2;obj3, ..." obj -> int
+    OBJECTS TEXT,       --"obj1;obj2;obj3, ..."
     POS TEXT            --"x1;y1;x2;y2;..."
 );
 

@@ -7,9 +7,7 @@ public class DiscoveringObjects : MonoBehaviour {
 
 	public Transform tick;
 
-	public PlacedObjects po;
-	public List<string> listObjects;
-	public List<Vector2> listPositions;
+	private PlacedObjects po;
 	public int id;
 
 	public string typeObject = null;
@@ -32,7 +30,6 @@ public class DiscoveringObjects : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
 		GameObject go = GameObject.Find("PlacedObjects");
 		if(go == null){
 			Debug.LogError("Failed to find an object named 'PlacedObjects'");
@@ -40,13 +37,8 @@ public class DiscoveringObjects : MonoBehaviour {
 			return;
 		}
 
-		po = go.GetComponent<PlacedObjects>();
-		id = Random.Range (0, po.GetNbList () + 1);
-
-		for (int i = 0; i < nbObjects; i++) {
-			listObjects.Add (po.GetObject (id, i));
-			listPositions.Add (po.GetPosition (id, i));
-		}
+		po = go.GetComponent<PlacedObjects> ();
+		po.RandInitObjects ();
 
 		GameObject go2 = GameObject.Find ("Timer");
 		if(go2 == null){
@@ -66,13 +58,12 @@ public class DiscoveringObjects : MonoBehaviour {
 
 		player = go3.GetComponent<Player> ();
 
-		DisableToggle ();
+
 	}
-
-
+		
 	// Update is called once per frame
 	void Update () {
-
+		DisableToggle ();
 		Vector2 mousePosition = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
 		Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition);
 		Vector2 screenPosition = Camera.main.ScreenToViewportPoint (mousePosition);
@@ -84,9 +75,9 @@ public class DiscoveringObjects : MonoBehaviour {
 						counter++;
 						Instantiate (tick, new Vector3(obj[0], obj[1], -1), tick.rotation);
 						nbObjectsText.text = counter + "/" + nbObjects;
-						int ind = listObjects.IndexOf(typeObject);
-						listObjects.Remove (typeObject);
-						listPositions.RemoveAt (ind);
+						int ind = po.GetObjects ().IndexOf (typeObject);
+						po.GetObjects().RemoveAt (ind);
+						po.GetPositions ().RemoveAt (ind);
 						DisableToggle ();
 					}
 				}
@@ -119,35 +110,38 @@ public class DiscoveringObjects : MonoBehaviour {
 	}
 
 	private void DisableToggle(){
-		//Disable toggle of object that are not hide in the scene.
-		if (listObjects.Contains ("baignoire") == false) {
-			isBaignoire.interactable = false;
-		} 
-		if (listObjects.Contains ("canape") == false) {
-			isCanape.interactable = false;
-		} 
-		if (listObjects.Contains ("chaise") == false) {
-			isChaise.interactable = false;
-		} 
-		if (listObjects.Contains ("evier") == false) {
-			isEvier.interactable = false;
-		} 
-		if (listObjects.Contains ("tablerec") == false) {
-			isTableRec.interactable = false;
-		} 
-		if (listObjects.Contains ("tableron") == false) {
-			isTableRon.interactable = false;
-		}
-		if (listObjects.Contains ("toilette") == false) {
-			isToilette.interactable = false;
+		if (po.isReady ()) {
+			//Disable toggle of objects that are not hide in the scene.
+			if (po.GetObjects ().Contains ("baignoire") == false) {
+				isBaignoire.interactable = false;
+			} 
+			if (po.GetObjects ().Contains ("canape") == false) {
+				isCanape.interactable = false;
+			} 
+			if (po.GetObjects ().Contains ("chaise") == false) {
+				isChaise.interactable = false;
+			} 
+			if (po.GetObjects ().Contains ("evier") == false) {
+				isEvier.interactable = false;
+			} 
+			if (po.GetObjects ().Contains ("tablerec") == false) {
+				isTableRec.interactable = false;
+			} 
+			if (po.GetObjects ().Contains ("tableron") == false) {
+				isTableRon.interactable = false;
+			}
+			if (po.GetObjects ().Contains ("toilette") == false) {
+				isToilette.interactable = false;
+			}
 		}
 	}
 		
 	private bool CheckObject(Vector2 mousePosition){
 		//Check if the player clicked on an object.
-		int ind = listObjects.IndexOf(typeObject);
+		int ind = po.GetObjects().IndexOf(typeObject);
+		Debug.Log (ind);
 		//Debug.Log (((mousePosition [0] - listPositions[ind][0]) * (mousePosition [0] - listPositions[ind][0]) + (mousePosition [1] - listPositions[ind][1]) * (mousePosition [1] -listPositions[ind][1])));
-		int score = player.CalculScore (mousePosition, listPositions[ind]);
+		int score = player.CalculScore (mousePosition, po.GetPositions()[ind]);
 		if (score > 0.02 * 500) {
 			player.ChangeScore (score);
 			scoreText.text = "Score : " + player.GetScore ();

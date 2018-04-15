@@ -14,7 +14,8 @@ public class HidingObjects : MonoBehaviour {
 	public string typeObject = null;
 
     public KeyCode clic;
-   
+	public int id;
+
 	public Toggle isBaignoire;
 	public Toggle isCanape;
 	public Toggle isChaise;
@@ -23,15 +24,21 @@ public class HidingObjects : MonoBehaviour {
 	public Toggle isTableRon;
 	public Toggle isToilette;
 
+	public Button returnButton;
+
 	public static int nbObjects = 3;
 	public int counter = 0;
 	public Text nbObjectsText;
     
-	public PlacedObjects po;
-	public int id;
+	public string src = "imagetest";
+	private PlacedObjects po;
+
+	private DataController data;
 
     // Use this for initialization
     void Start () {
+		data = new DataController();
+
 		nbObjectsText.text = "0/" + nbObjects;
 
 		GameObject go = GameObject.Find("PlacedObjects");
@@ -41,9 +48,10 @@ public class HidingObjects : MonoBehaviour {
 			return;
 		}
 
-		po = go.GetComponent<PlacedObjects>();
-		po.NewList ();
-		id = po.GetNbList ();
+		po = go.GetComponent<PlacedObjects> ();
+		po.AddValues (id, src);
+
+
 
 		RectTransform objectRectTransform = canvas.GetComponent<RectTransform> ();
 		h_canvas = (int) objectRectTransform.rect.height;
@@ -54,12 +62,12 @@ public class HidingObjects : MonoBehaviour {
 	void Update () {
 
 		Vector2 mousePosition = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
-		Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition);
+		//Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition);
 		Vector2 screenPosition = Camera.main.ScreenToViewportPoint (mousePosition);
 		SetTypeObject ();
 		if (Input.GetKeyDown(clic) && screenPosition [0] < 0.8 && typeObject != null  && counter < nbObjects) { 	//Check if the clic is on the GamePanel. Check if one specific object is active.
-			po.AddPosition (id, mousePosition);
-			po.AddObject(id, typeObject);
+			po.AddPosition (mousePosition);
+			po.AddObject(typeObject);
 			counter++;
 			GameObject newButton = Instantiate(button, new Vector3((screenPosition[0] - 0.5f) * w_canvas, (screenPosition[1] - 0.5f) * h_canvas, -1), new Quaternion(0, 0, 0, 0)) as GameObject;
 			newButton.transform.SetParent(canvas.transform, false);
@@ -67,7 +75,6 @@ public class HidingObjects : MonoBehaviour {
 			nbObjectsText.text = counter + "/" + nbObjects;
 		}
 	}
-
 
 	private void SetTypeObject(){
 		if (isBaignoire.isOn) {
@@ -86,6 +93,12 @@ public class HidingObjects : MonoBehaviour {
 			typeObject = "toilette";
 		} else {
 			typeObject = null;
+		}
+	}
+
+	public void OnGUI(){
+		if(GUI.Button(new Rect(20, 250, 100, 30), "GET")){
+			StartCoroutine(data.RequestGetFlats(1));
 		}
 	}
 }

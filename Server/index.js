@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 
 /************ROUTES*************/
 
-app.get('/:name', (req, res, next) => {
+app.get('/players/:name', (req, res, next) => {
     DB.all('SELECT * FROM PLAYERS WHERE NAME = ?', [req.params.name], (err, data) => {
         if (err) {
             return next(err);
@@ -64,7 +64,7 @@ app.post('/circuits', (req, res, next) => {
 });
 
 app.get('/flats/:id', (req, res, next) => {
-    DB.get('SELECT OBJECTS, POS FROM FLATS WHERE ID = ?', [req.params.id], (err, data) => {
+    DB.get('SELECT OBJECTS, POS, CIRCUITS FROM FLATS WHERE ID = ?', [req.params.id], (err, data) => {
         if (err) {
             return next(err);
         }
@@ -91,7 +91,7 @@ app.post('/clic', (req, res, next) => {
     });
 });
 
-app.put('/players/:id', (req, res, next) => {
+app.post('/players/:id', (req, res, next) => {
     DB.run('UPDATE PLAYERS SET FLAT = ?', [req.params.id], (err) => {
         if(err) {
             return next(err);
@@ -163,6 +163,16 @@ app.post('/players/level/:name', (req, res, next) => {
         return res.end();
     });
 });
+
+app.get('/flatsrand', (req, res, next) => {
+    DB.get('SELECT OBJECTS, POS, CIRCUITS FROM FLATS ORDER BY RANDOM() LIMIT 1', (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
 /************ROUTES*************/
 
 app.listen(3131, (err) => {
