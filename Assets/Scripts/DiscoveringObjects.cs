@@ -5,15 +5,12 @@ using UnityEngine.UI;
 
 public class DiscoveringObjects : MonoBehaviour {
 
-	private float maxRay = 0f;
-
 	public Transform tick;
-
-	public KeyCode clic;
 
 	public PlacedObjects po;
 	public List<string> listObjects;
 	public List<Vector2> listPositions;
+	public int id;
 
 	public string typeObject = null;
 	public Toggle isBaignoire;
@@ -30,10 +27,12 @@ public class DiscoveringObjects : MonoBehaviour {
 
 	public Timer time;
 
+	public Player player;
+	public Text scoreText;
+
 	// Use this for initialization
 	void Start () {
-		maxRay = 1000; //Camera.main.orthographicSize * 2;
-	
+
 		GameObject go = GameObject.Find("PlacedObjects");
 		if(go == null){
 			Debug.LogError("Failed to find an object named 'PlacedObjects'");
@@ -42,9 +41,11 @@ public class DiscoveringObjects : MonoBehaviour {
 		}
 
 		po = go.GetComponent<PlacedObjects>();
+		id = Random.Range (0, po.GetNbList () + 1);
+
 		for (int i = 0; i < nbObjects; i++) {
-			listObjects.Add (po.GetObject (i));
-			listPositions.Add (po.GetPosition (i));
+			listObjects.Add (po.GetObject (id, i));
+			listPositions.Add (po.GetPosition (id, i));
 		}
 
 		GameObject go2 = GameObject.Find ("Timer");
@@ -56,6 +57,15 @@ public class DiscoveringObjects : MonoBehaviour {
 
 		time = go2.GetComponent<Timer>();
 
+		GameObject go3 = GameObject.Find ("Player");
+		if(go3 == null){
+			Debug.LogError("Failed to find an object named 'Player'");
+			this.enabled = false;
+			return;
+		}
+
+		player = go3.GetComponent<Player> ();
+
 		DisableToggle ();
 	}
 
@@ -64,11 +74,12 @@ public class DiscoveringObjects : MonoBehaviour {
 	void Update () {
 
 		Vector2 mousePosition = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
-		Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition); //  Camera.main.ScreenToWorldPoint (Input.mousePosition)
+		Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition);
+		Vector2 screenPosition = Camera.main.ScreenToViewportPoint (mousePosition);
 		SetTypeObject();
 		if(time.TimeIsOver() == false) {
 			if (counter < nbObjects) {
-				if (Input.GetKey (clic) && obj [0] < 4.78 && typeObject != null) {
+				if(Input.GetMouseButtonDown(0) && typeObject != null && screenPosition [0] < 0.8){
 					if (CheckObject(mousePosition)) {
 						counter++;
 						Instantiate (tick, new Vector3(obj[0], obj[1], -1), tick.rotation);
@@ -136,7 +147,10 @@ public class DiscoveringObjects : MonoBehaviour {
 		//Check if the player clicked on an object.
 		int ind = listObjects.IndexOf(typeObject);
 		//Debug.Log (((mousePosition [0] - listPositions[ind][0]) * (mousePosition [0] - listPositions[ind][0]) + (mousePosition [1] - listPositions[ind][1]) * (mousePosition [1] -listPositions[ind][1])));
-		if (((mousePosition [0] - listPositions[ind][0]) * (mousePosition [0] - listPositions[ind][0]) + (mousePosition [1] - listPositions[ind][1]) * (mousePosition [1] -listPositions[ind][1])) < maxRay) {
+		int score = player.CalculScore (mousePosition, listPositions[ind]);
+		if (score > 0.02 * 500) {
+			player.ChangeScore (score);
+			scoreText.text = "Score : " + player.GetScore ();
 			return true;
 		} else {
 			return false;

@@ -8,7 +8,6 @@ public class HidingObjects : MonoBehaviour {
 	public Transform mark;
 	public string typeObject = null;
 
-
     public KeyCode clic;
    
 	public Toggle isBaignoire;
@@ -24,6 +23,7 @@ public class HidingObjects : MonoBehaviour {
 	public Text nbObjectsText;
     
 	public PlacedObjects po;
+	public int id;
 
     // Use this for initialization
     void Start () {
@@ -37,7 +37,8 @@ public class HidingObjects : MonoBehaviour {
 		}
 
 		po = go.GetComponent<PlacedObjects>();
-
+		po.NewList ();
+		id = po.GetNbList ();
 	}
 
 	// Update is called once per frame
@@ -45,15 +46,14 @@ public class HidingObjects : MonoBehaviour {
 
 		Vector2 mousePosition = new Vector2 (Input.mousePosition.x, Input.mousePosition.y);
 		Vector2 obj = Camera.main.ScreenToWorldPoint (mousePosition);
+		Vector2 screenPosition = Camera.main.ScreenToViewportPoint (mousePosition);
 		SetTypeObject ();
-		if (Input.GetKey (clic) && obj[0] < 4.78 && typeObject != null && counter < nbObjects) { 	//Check if the clic is on the GamePanel. Check if one specific object is active.
-			if (po.IsIn (mousePosition) == false) { 	//To solve the multiple input for one click issue.
-				po.AddPosition (mousePosition);
-				po.AddObject(typeObject);
-				counter++;
-				Instantiate (mark, new Vector3(obj[0], obj[1], -1), mark.rotation);
-				nbObjectsText.text = counter + "/" + nbObjects;
-			}
+		if (Input.GetKeyDown(clic) && screenPosition [0] < 0.8 && typeObject != null  && counter < nbObjects) { 	//Check if the clic is on the GamePanel. Check if one specific object is active.
+			po.AddPosition (id, mousePosition);
+			po.AddObject(id, typeObject);
+			counter++;
+			Instantiate (mark, new Vector3(obj[0], obj[1], -1), mark.rotation);
+			nbObjectsText.text = counter + "/" + nbObjects;
 		}
 	}
 
