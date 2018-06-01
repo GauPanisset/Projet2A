@@ -101,7 +101,7 @@ app.post('/players/:id', (req, res, next) => {
 });
 
 app.post('/players', (req, res, next) => {
-    DB.run('INSERT INTO PLAYERS (NAME, LEVEL, SCORE, FLAT) VALUES (?, ?, ?, ?)', [req.body.name, req.body.level, req.body.score, req.body.flat], (err) => {
+    DB.run('INSERT INTO PLAYERS (NAME, LEVEL, SCORE, FLAT, HASHPASSWORD) VALUES (?, ?, ?, ?, ?)', [req.body.name, req.body.level, req.body.score, req.body.flat, req.body.hashpassword], (err) => {
         if (err) {
             return next(err);
         }

@@ -19,10 +19,37 @@ public class DataController {
 	protected int score;
 	protected int flat;
 	protected int count;
+	protected string hashPassword;
+
+	/// <summary>
+	/// Créé le hash d'un mot de passe à partir du mot de passe en clair.
+	/// </summary>
+	/// <returns> Le mot de passe hashé</returns>
+	/// <param name="strToEncrypt"> String à encrypter.</param>
+	public string Md5Sum(string strToEncrypt)
+	{
+		System.Text.UTF8Encoding ue = new System.Text.UTF8Encoding();
+		byte[] bytes = ue.GetBytes(strToEncrypt);
+
+		// encrypt bytes
+		System.Security.Cryptography.MD5CryptoServiceProvider md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+		byte[] hashBytes = md5.ComputeHash(bytes);
+
+		// Convert the encrypted bytes back to a string (base 16)
+		string hashString = "";
+
+		for (int i = 0; i < hashBytes.Length; i++)
+		{
+			hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, '0');
+		}
+
+		return hashString.PadLeft(32, '0');
+	}
 
 	public IEnumerator RequestGetPlayers (string username){
 		string res;
-		string request = url + "/" + WWW.EscapeURL (username);
+		string request = url + "/players/" + WWW.EscapeURL(username);
+
 		UnityWebRequest www = UnityWebRequest.Get (request); 
 
 		yield return www.SendWebRequest ();
@@ -33,11 +60,12 @@ public class DataController {
 
 			JSONNode result = JSON.Parse (res);
 
-			id = int.Parse (result [0][0]);
-			username = result [0][1];
-			level = int.Parse (result [0][2]);
-			score = int.Parse (result [0][3]);
-			flat = int.Parse (result [0][4]);
+			this.id = int.Parse (result [0][0]);
+			this.username = result [0][1];
+			this.level = int.Parse (result [0][2]);
+			this.score = int.Parse (result [0][3]);
+			this.flat = int.Parse (result [0][4]);
+			this.hashPassword = result [0][5];
 
 			Debug.Log ("Get");
 
@@ -171,19 +199,22 @@ public class DataController {
 		if (www.isNetworkError || www.isHttpError) {			//Error managment
 			Debug.Log (www.error);
 		} else {
-			Debug.Log ("Form uplaod complete!");
+			Debug.Log ("Form upload complete!");
 		}
 	}
 		
-	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat){
+	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat, string hashPassword){
 		string request = url + "/players";			//url of the request
 
 		WWWForm form = new WWWForm ();				//create the body of the request
+
+		Debug.Log ("HashPassword looks like : " + hashPassword);
 
 		form.AddField ("name", username);
 		form.AddField ("level", level);
 		form.AddField ("score", score);
 		form.AddField ("flat", flat);
+		form.AddField ("hashpassword", hashPassword);
 
 		UnityWebRequest www = UnityWebRequest.Post (request, form);			//create the POST request
 
@@ -192,7 +223,7 @@ public class DataController {
 		if (www.isNetworkError || www.isHttpError) {			//Error managment
 			Debug.Log (www.error);
 		} else {
-			Debug.Log ("Form uplaod complete!");
+			Debug.Log ("Form upload complete!");
 		}
 	}
 
@@ -210,7 +241,7 @@ public class DataController {
 		if (www.isNetworkError || www.isHttpError) {			//Error managment
 			Debug.Log (www.error);
 		} else {
-			Debug.Log ("Form uplaod complete!");
+			Debug.Log ("Form upload complete!");
 		}
 	}
 
@@ -248,6 +279,13 @@ public class DataController {
 
 	public string GetUsername(){
 		return this.username;
+	}
+
+	/// <summary>
+	/// NB : Cette fonction renvoie le hash du password
+	/// </summary>
+	public string GetPassword(){
+		return this.hashPassword;
 	}
 
 	public string GetSource(){

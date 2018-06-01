@@ -42,10 +42,6 @@ public class Player : MonoBehaviour {
 		score += s;
 	}
 
-	public void LevelUp(){
-		level++;
-	}
-
 	public int GetScore(){
 		return score;
 	}
