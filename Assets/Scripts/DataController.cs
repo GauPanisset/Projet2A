@@ -11,15 +11,30 @@ public class DataController {
 
 	protected int id;				
 	protected string username;
+
 	protected string src;
 	protected List<string> objects = new List<string>();
 	protected List<Vector2> positions = new List<Vector2>();
 	protected List<int> circuits = new List<int>();
+
 	protected int level;
 	protected int score;
 	protected int flat;
+
+	protected Medal medal;
+	protected int countMedals = 3;
+
+	int idMedal;
+
+	protected Medal[] medalList;
+
 	protected int count;
 	protected string hashPassword;
+
+	void Start(){
+		medalList = new Medal[countMedals];
+		medal = new Medal ();
+	}
 
 	/// <summary>
 	/// Créé le hash d'un mot de passe à partir du mot de passe en clair.
@@ -71,6 +86,27 @@ public class DataController {
 
 		} else {
 			Debug.Log ("Can't get");
+		}
+	}
+
+	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat, string hassPassword){
+		string request = url + "/players";
+
+		WWWForm form = new WWWForm ();
+
+		form.AddField ("name", username);
+		form.AddField ("level", level);
+		form.AddField ("score", score);
+		form.AddField ("hashpassword", hashPassword);
+
+		UnityWebRequest www = UnityWebRequest.Post (request, form);
+
+		yield return www.SendWebRequest ();
+
+		if (www.isNetworkError || www.isHttpError) {
+			Debug.Log (www.error);
+		} else {
+			Debug.Log ("Form upload complete");
 		}
 	}
 
@@ -202,28 +238,68 @@ public class DataController {
 			Debug.Log ("Form upload complete!");
 		}
 	}
-		
-	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat, string hashPassword){
-		string request = url + "/players";			//url of the request
 
-		WWWForm form = new WWWForm ();				//create the body of the request
+	public IEnumerator RequestGetIDMedals(){
+		//Solution temporaire.
+		string res;
+		string request = url + "/medals/";
 
-		Debug.Log ("HashPassword looks like : " + hashPassword);
+		int i = 0;
 
-		form.AddField ("name", username);
-		form.AddField ("level", level);
-		form.AddField ("score", score);
-		form.AddField ("flat", flat);
-		form.AddField ("hashpassword", hashPassword);
+		while (i < countMedals) {
+			
+			UnityWebRequest www = UnityWebRequest.Get (request + i.ToString()); 
 
-		UnityWebRequest www = UnityWebRequest.Post (request, form);			//create the POST request
+			yield return www.SendWebRequest ();
 
-		yield return www.SendWebRequest();
+			if (www.isNetworkError || www.isHttpError) {
+				Debug.Log (www.error);
+			} else if ((res = www.downloadHandler.text) != "") {
 
-		if (www.isNetworkError || www.isHttpError) {			//Error managment
+				JSONNode result = JSON.Parse (res);
+
+				//Medal(id, name, description, obtention, reward).
+				medal = new Medal();
+				medal.AddValues(int.Parse (result [0]), result [1], result [2], int.Parse (result [3]), int.Parse (result [4]));
+
+				this.medalList [i] = medal;
+				Debug.Log ("Get");
+
+			} else {
+				Debug.Log ("Can't get");
+			}
+
+			i++;
+		}
+	}
+
+	public IEnumerator RequestGetMedal(int id){
+		string res;
+		string request = url + "/medals/" + id;
+
+		UnityWebRequest www = UnityWebRequest.Get (request); 
+
+		yield return www.SendWebRequest ();
+
+		if (www.isNetworkError || www.isHttpError) {
 			Debug.Log (www.error);
+		} else if ((res = www.downloadHandler.text) != "") {
+
+			JSONNode result = JSON.Parse (res);
+			medal = new Medal();
+
+			idMedal = int.Parse(result[0]);
+			string nameMedal = result [1];
+			string descriptionMedal = result [2];
+			int obtentionMedal = int.Parse(result [3]);
+			int rewardMedal = int.Parse(result [4]);
+
+			medal.AddValues(idMedal, nameMedal, descriptionMedal, obtentionMedal, rewardMedal);
+
+			Debug.Log ("Get");
+
 		} else {
-			Debug.Log ("Form upload complete!");
+			Debug.Log ("Can't get");
 		}
 	}
 
@@ -303,6 +379,16 @@ public class DataController {
 	public List<Vector2> GetPositions(){
 		return this.positions;
 	}
+
+	public int GetCountMedals(){
+		return this.countMedals;
+	}
+
+	public Medal GetMedal(){
+		return this.medal;
+	}
+
+	public Medal[] GetListMedals(){
+		return this.medalList;
+	}
 }
-
-

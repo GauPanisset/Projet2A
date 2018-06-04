@@ -32,7 +32,10 @@ app.use((req, res, next) => {
 });
 
 
-/************ROUTES*************/
+/*************** ROUTES ****************/
+
+/*********Player routes*********/
+
 
 app.get('/players/:name', (req, res, next) => {
     DB.all('SELECT * FROM PLAYERS WHERE NAME = ?', [req.params.name], (err, data) => {
@@ -42,6 +45,46 @@ app.get('/players/:name', (req, res, next) => {
         return res.json(data);
     });
 });
+
+app.post('/players/:id', (req, res, next) => {
+    DB.run('UPDATE PLAYERS SET FLAT = ?', [req.params.id], (err) => {
+        if(err) {
+            return next(err);
+        }
+        return res.end();
+    });
+});
+
+app.post('/players', (req, res, next) => {
+    DB.run('INSERT INTO PLAYERS (NAME, LEVEL, SCORE, FLAT, HASHPASSWORD) VALUES (?, ?, ?, ?, ?)', [req.body.name, req.body.level, req.body.score, req.body.flat, req.body.hashpassword], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(201);
+        return res.end();
+    });
+});
+
+app.post('/players/score/:name', (req, res, next) => {
+    DB.run('UPDATE PLAYERS SET SCORE = ? WHERE NAME = ?', [req.body.score, req.params.name], (err) => {
+        if(err) {
+            return next(err);
+        }
+        return res.end();
+    });
+});
+
+app.post('/players/level/:name', (req, res, next) => {
+    DB.run('UPDATE PLAYERS SET LEVEL = ? WHERE NAME = ?', [req.body.level, req.params.name], (err) => {
+        if(err) {
+            return next(err);
+        }
+        return res.end();
+    });
+});
+
+
+/******* Other routes *******/
 
 app.post('/flats', (req, res, next) => {
     DB.run('INSERT INTO FLATS (URL, OBJECTS, POS, CIRCUITS) VALUES (?, ?, ?, ?)', [req.body.url, req.body.objects, req.body.pos, req.body.circuits], (err) => {
@@ -72,6 +115,33 @@ app.get('/flats/:id', (req, res, next) => {
     });
 });
 
+app.get('/medals', (req, res, next) => {
+    DB.get('SELECT * FROM MEDALS', [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
+app.get('/medals/count', (req, res, next) => {
+    DB.get('SELECT COUNT(*) FROM MEDALS', [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
+app.get('/medals/:id', (req, res, next) => {
+    DB.get('SELECT ID, NAME, DESCRIPTION, OBTENTION, REWARD FROM MEDALS WHERE ID = ?', [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
 app.get('/circuits/:id', (req, res, next) => {
     DB.get('SELECT OBJECTS, POS FROM CIRCUITS WHERE ID = ?', [req.params.id], (err, data) => {
         if (err) {
@@ -91,24 +161,7 @@ app.post('/clic', (req, res, next) => {
     });
 });
 
-app.post('/players/:id', (req, res, next) => {
-    DB.run('UPDATE PLAYERS SET FLAT = ?', [req.params.id], (err) => {
-        if(err) {
-            return next(err);
-        }
-        return res.end();
-    });
-});
 
-app.post('/players', (req, res, next) => {
-    DB.run('INSERT INTO PLAYERS (NAME, LEVEL, SCORE, FLAT, HASHPASSWORD) VALUES (?, ?, ?, ?, ?)', [req.body.name, req.body.level, req.body.score, req.body.flat, req.body.hashpassword], (err) => {
-        if (err) {
-            return next(err);
-        }
-        res.status(201);
-        return res.end();
-    });
-});
 
 app.get('/idflats', (req, res, next) => {
     DB.get('SELECT COUNT (*) FROM FLATS', (err, data) => {
@@ -139,24 +192,6 @@ app.post('/flats/update', (req, res, next) => {
 
 app.post('/circuits/update', (req, res, next) => {
     DB.run('UPDATE CIRCUITS SET OBJECTS = ?, POS = ?', [req.body.objects, req.body.pos], (err) => {
-        if(err) {
-            return next(err);
-        }
-        return res.end();
-    });
-});
-
-app.post('/players/score/:name', (req, res, next) => {
-    DB.run('UPDATE PLAYERS SET SCORE = ? WHERE NAME = ?', [req.body.score, req.params.name], (err) => {
-        if(err) {
-            return next(err);
-        }
-        return res.end();
-    });
-});
-
-app.post('/players/level/:name', (req, res, next) => {
-    DB.run('UPDATE PLAYERS SET LEVEL = ? WHERE NAME = ?', [req.body.level, req.params.name], (err) => {
         if(err) {
             return next(err);
         }

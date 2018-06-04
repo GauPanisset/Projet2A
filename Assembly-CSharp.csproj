@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\HidingObjects.cs" />
      <Compile Include="Assets\Scripts\Lock.cs" />
      <Compile Include="Assets\Scripts\LogginManager.cs" />
+     <Compile Include="Assets\Scripts\Medal.cs" />
      <Compile Include="Assets\Scripts\PasswordAdviser.cs" />
      <Compile Include="Assets\Scripts\PlacedObjects.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
