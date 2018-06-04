@@ -4,56 +4,98 @@ using UnityEngine;
 
 public class PlacedObjects : MonoBehaviour {
 
-	protected List<List<string>> listObjects = new List<List<string>>();
-	protected List<List<Vector2>> positionObjects = new List<List<Vector2>>();
+	public List<string> listObjects = new List<string>();
+	public List<Vector2> positionObjects = new List<Vector2>();
+	public List<int> circuits = new List<int>();
 
-	static int nbList = -1;
-	static PlacedObjects instance;
+	private int id;
+	public string source = "test";
 
-	void Start(){
+	public DataController data;
 
-		if (instance != null) {
-			Destroy (this.gameObject);
-			return; 
-		} 
-
-		instance = this;
-
-		DontDestroyOnLoad (gameObject);
+	public void Start(){
 	}
+
+	public void Awake(){
+		data = new DataController ();
+	}
+
+	public void AddValues(int id, string source){
+		this.id = id;
+		this.source = source;
+	}
+
+	public void InitObjects(){
+		Debug.Log (this.id);
+		StartCoroutine (data.RequestGetFlats (this.id));
+
+		this.listObjects = data.GetObjects ();
+		this.positionObjects = data.GetPositions ();
+		this.circuits = data.GetCircuits ();
+	}
+
+	public void RandInitObjects(){
+		StartCoroutine (data.RequestGetRandFlat ());
+
+		this.listObjects = data.GetObjects ();
+
+		this.positionObjects = data.GetPositions ();
+		if (data.GetCircuits () != null) {
+			this.circuits = data.GetCircuits ();
+		}
+	}
+
+	public void SendObjects(){
+		string obj = "";
+		string pos = "";
+		string cir = "";
+
+		if (this.listObjects != null && this.circuits != null) {
+			for (int i = 0; i < this.listObjects.Count; i++) {
+				obj = string.Concat (obj, this.listObjects [i]);
+				pos = string.Concat (pos, this.positionObjects [i][0]);
+				pos = string.Concat (pos, ";");
+				pos = string.Concat (pos, this.positionObjects [i][1]);
+				if (i < this.listObjects.Count - 1) {
+					obj = string.Concat (obj, ";");
+					pos = string.Concat (pos, ";");
+				}
+			}
+			for (int i = 0; i < this.circuits.Count; i++) {
+				string.Concat (cir, this.circuits [i].ToString ());
+				if (i < this.circuits.Count - 1) {
+					string.Concat (cir, ";");
+				}
+			}
+		}
+
+		StartCoroutine(data.RequestPostFlats(this.source, obj, pos, cir));
+	}
+
+    public void AddObject(string obj)
+    {
+		this.listObjects.Add(obj);
+    }
+
+    public void AddPosition(Vector2 pos)
+    {
+        this.positionObjects.Add(pos);
+    }
 		
-	public void NewList(){
-		listObjects.Add (new List<string> ());
-		positionObjects.Add (new List<Vector2> ());
-		nbList++;
+    public List<string> GetObjects()
+    {
+		return this.listObjects;
+    }
+
+	public List<Vector2> GetPositions()
+    {
+		return this.positionObjects;
+    }
+
+	public bool isReady(){
+		if (this.listObjects.Count > 0) {
+			return true;
+		}
+		return false;
 	}
-
-	public int GetNbList(){
-		return nbList;
-	}
-
-    public void AddObject(int id, string obj)
-    {
-		listObjects[id].Add(obj);
-    }
-
-    public void AddPosition(int id, Vector2 pos)
-    {
-        this.positionObjects[id].Add(pos);
-    }
-		
-    public string GetObject(int id, int ind)
-    {
-		return this.listObjects[id][ind];
-    }
-
-    public Vector2 GetPosition(int id, int ind)
-    {
-		return this.positionObjects[id][ind];
-    }
-	
-	public bool IsIn(int id, Vector2 pos)
-    {
-		return this.positionObjects[id].Contains(pos);
-    }
 }

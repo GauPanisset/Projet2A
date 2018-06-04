@@ -22,6 +22,10 @@ ExportedObj/
 *.booproj
 *.svd
 *.pdb
+<<<<<<< HEAD
+=======
+*.opendb
+>>>>>>> ProfileWithServer
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -33,4 +37,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+<<<<<<< HEAD
 
+=======
+>>>>>>> ProfileWithServer

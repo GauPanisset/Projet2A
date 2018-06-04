@@ -6,7 +6,11 @@ public class Player : MonoBehaviour {
 
 	protected int score = 0;
 	protected int level = 1;
-	protected List<string> evolution; //Not used
+	protected int flat = 0;
+	protected int id;
+	public string username;
+
+	private DataController data;
 
 	static Player instance;
 
@@ -21,10 +25,10 @@ public class Player : MonoBehaviour {
 
 		DontDestroyOnLoad (gameObject);
 	}
-	
+
+
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
 	public int CalculScore(Vector2 click, Vector2 position){
@@ -38,16 +42,35 @@ public class Player : MonoBehaviour {
 		score += s;
 	}
 
-	public void LevelUp(){
-		level++;
-	}
-
 	public int GetScore(){
 		return score;
 	}
 
 	public int GetLevel(){
 		return level;
+	}
+
+	public string GetUsername(){
+		return username;
+	}
+	public int GetID(){
+		return id;
+	}
+
+	public void SetUsername(string username){
+		this.username = username;
+	}
+
+	public void SetID(int id){
+		this.id = id;
+	}
+
+	public void SetScore(int score){
+		this.score = score;
+	}
+
+	public void SetLevel(int level){
+		this.level = level;
 	}
 
 }

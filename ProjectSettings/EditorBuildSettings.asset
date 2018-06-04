@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/BravoToCharlieLogMenu1.0.unity
+    guid: ceca9b72ec0e3374a82b5f6a1f14da88
+  - enabled: 1
     path: Assets/Scenes/BravoToCharlieMenu1.0.unity
     guid: 7c4abac6c62a18343a8782a6942a4ac2
   - enabled: 1
@@ -16,4 +19,4 @@ EditorBuildSettings:
     guid: 2671e4f31ef6db9428e424aa305f55fa
   - enabled: 1
     path: Assets/Scenes/BravoToCharlieProfil.unity
-    guid: 00000000000000000000000000000000
+    guid: 4c14e6c802f437443ba0d2e205308cfa
