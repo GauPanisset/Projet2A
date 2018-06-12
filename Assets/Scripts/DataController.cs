@@ -31,11 +31,6 @@ public class DataController {
 	protected int count;
 	protected string hashPassword;
 
-	void Start(){
-		medalList = new Medal[countMedals];
-		medal = new Medal ();
-	}
-
 	/// <summary>
 	/// Créé le hash d'un mot de passe à partir du mot de passe en clair.
 	/// </summary>
@@ -239,37 +234,39 @@ public class DataController {
 		}
 	}
 
-	public IEnumerator RequestGetIDMedals(){
+	public IEnumerator RequestGetMedals(){
 		//Solution temporaire.
 		string res;
-		string request = url + "/medals/";
+		string request = url + "/medals";
 
-		int i = 0;
+		UnityWebRequest www = UnityWebRequest.Get (request); 
 
-		while (i < countMedals) {
-			
-			UnityWebRequest www = UnityWebRequest.Get (request + i.ToString()); 
+		yield return www.SendWebRequest ();
 
-			yield return www.SendWebRequest ();
+		if (www.isNetworkError || www.isHttpError) {
+			Debug.Log (www.error);
+		} else if ((res = www.downloadHandler.text) != "") {
 
-			if (www.isNetworkError || www.isHttpError) {
-				Debug.Log (www.error);
-			} else if ((res = www.downloadHandler.text) != "") {
+			JSONNode result = JSON.Parse (res);
 
-				JSONNode result = JSON.Parse (res);
+			//Medal(id, name, description, obtention, reward).
 
-				//Medal(id, name, description, obtention, reward).
-				medal = new Medal();
-				medal.AddValues(int.Parse (result [0]), result [1], result [2], int.Parse (result [3]), int.Parse (result [4]));
+			medal = new Medal ();
+			this.medalList = new Medal[countMedals];
+
+			for(int i = 0; i < countMedals; i++) {
+				medal = new Medal ();
+				medal.AddValues(int.Parse (result [i][0]), result [i][1], result [i][2], int.Parse (result [i][3]), int.Parse (result [i][4]));
 
 				this.medalList [i] = medal;
-				Debug.Log ("Get");
 
-			} else {
-				Debug.Log ("Can't get");
+				medal = this.medalList [i];
 			}
 
-			i++;
+			Debug.Log ("Get");
+
+		} else {
+			Debug.Log ("Can't get");
 		}
 	}
 

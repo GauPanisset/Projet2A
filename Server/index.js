@@ -46,6 +46,15 @@ app.get('/players/:name', (req, res, next) => {
     });
 });
 
+app.get('/get/players', (req, res, next) => {
+    DB.all('SELECT * FROM PLAYERS', (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
 app.post('/players/:id', (req, res, next) => {
     DB.run('UPDATE PLAYERS SET FLAT = ?', [req.params.id], (err) => {
         if(err) {
@@ -64,6 +73,8 @@ app.post('/players', (req, res, next) => {
         return res.end();
     });
 });
+
+
 
 app.post('/players/score/:name', (req, res, next) => {
     DB.run('UPDATE PLAYERS SET SCORE = ? WHERE NAME = ?', [req.body.score, req.params.name], (err) => {
@@ -116,7 +127,7 @@ app.get('/flats/:id', (req, res, next) => {
 });
 
 app.get('/medals', (req, res, next) => {
-    DB.get('SELECT * FROM MEDALS', [req.params.id], (err, data) => {
+    DB.all('SELECT * FROM MEDALS', (err, data) => {
         if (err) {
             return next(err);
         }
