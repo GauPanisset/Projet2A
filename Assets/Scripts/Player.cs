@@ -38,6 +38,10 @@ public class Player : MonoBehaviour {
 		return (int)(Mathf.Exp (-Mathf.Pow (sqrDist / para, 2)) * scoreMax);
 	}
 
+	public int CalculLevel(int score){
+		return (int)(Mathf.Sqrt (score/500f+1));
+	}
+
 	public void ChangeScore(int s){
 		score += s;
 	}

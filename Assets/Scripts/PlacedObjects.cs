@@ -26,7 +26,6 @@ public class PlacedObjects : MonoBehaviour {
 	}
 
 	public void InitObjects(){
-		Debug.Log (this.id);
 		StartCoroutine (data.RequestGetFlats (this.id));
 
 		this.listObjects = data.GetObjects ();

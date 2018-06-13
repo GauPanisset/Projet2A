@@ -12,7 +12,8 @@ public class ProfileManager : MonoBehaviour {
 
 	int score;
 
-	int scoreRequired; //Score requis pour avoir une médaille.
+	int levelRequired; //Score requis pour avoir une médaille.
+	int level;
 
 	int countMedals;
 	int countPlayerMedals;
@@ -51,11 +52,14 @@ public class ProfileManager : MonoBehaviour {
 		//Récupération scripts et gameobjects
 		player = GameObject.Find ("Player");
 		p = player.GetComponent<Player> (); //Récupération du script pour avoir les méthodes.
-		score = p.GetScore () + 1500;
+		score = p.GetScore ();
 
+		p.SetLevel (p.CalculLevel (score));
 		can = GameObject.Find ("Canvas");
 
 		data = new DataController ();
+
+		level = p.GetLevel ();
 
 		//Texts
 		nameText.text = "Name : " + p.GetUsername ();
@@ -72,8 +76,8 @@ public class ProfileManager : MonoBehaviour {
 		float width = t_Canvas.pixelRect.width;
 		float height = t_Canvas.pixelRect.height;
 
-		X = new float[] {0f, 0.45f * width/2f, 0.9f * width/2f, 0f, 0.45f * width/2f, 0.9f * width/2f};
-		Y = new float[] {0f, 0f, 0f, - height/2f, - height/2f, - height/2f};
+		X = new float[] {0f, 0.25f * width/2f, 0.50f * width/2f, 0f, 0.25f * width/2f, 0.50f * width/2f};
+		Y = new float[] {0f, 0f, 0f, - height/4f, - height/4f, - height/4f};
 
 		Vector3 localPos = can.transform.position + new Vector3(0, height/4f, 0);
 		Vector3 offset = new Vector3 (50f, -5f, 0f);
@@ -92,12 +96,11 @@ public class ProfileManager : MonoBehaviour {
 
 	}
 
-	void OnMouseEnter(){
+	/*void OnMouseEnter(){
 		foreach (Medal medal in medalList){
 			Renderer rend = GetComponent<Renderer> ();
-			Debug.Log ("lol" + medal.GetName());
 		}
-	}
+	}*/ //Unused 
 
 	private IEnumerator GetMedals(){
 		StartCoroutine (data.RequestGetMedals ());
@@ -106,13 +109,17 @@ public class ProfileManager : MonoBehaviour {
 
 		countMedals = medalList.Length;
 		for (int i = 0; i < countMedals; i++) {
-			
 			medal = medalList [i];
+
+			levelRequired = medal.obtentionMedal;
+			if (levelRequired <= level) { //Si le score requis est inférieur au score du joueur.
+				medalListAcquired.Add (medal);
+			}
 		}
 
-		CheckForMedals (score);
+		int len = medalListAcquired.Count;
 
-		for (int i = 0; i < countMedals; i++) {
+		for (int i = 0; i < len; i++) {
 			img = medalgolist[i].GetComponent<Image> ();
 
 			if (i == 0) {
@@ -123,29 +130,6 @@ public class ProfileManager : MonoBehaviour {
 				img.sprite = goldSprite;
 			}
 		}
-	}
-
-	/// <summary>
-	/// Checks if the player as enough points to have medals, fills a list of these medals, and makes instantiation.
-	/// </summary>
-	/// <param name="score">Player Score.</param>
-	List<Medal> CheckForMedals(int score){
-
-		countMedals = 3;
-
-		medalList = data.GetListMedals ();
-
-		for (int i = 0; i < countMedals; i++) {
-			Medal m = new Medal ();
-			m = medalList [i];
-
-			scoreRequired = medal.obtentionMedal;
-			if (scoreRequired <= score) { //Si le score requis est inférieur au score du joueur.
-				medalListAcquired.Add (medal);
-			}
-		}
-
-		return medalListAcquired;
 	}
 
 }

@@ -67,7 +67,6 @@ public class CreateLoginManager : MonoBehaviour {
 	/// <returns><c>true</c>, if password viability was checked, <c>false</c> otherwise.</returns>
 	/// <param name="password">Password (not the hash).</param>
 	protected bool checkPasswordViability(string password){
-		Debug.Log (PasswordAdvisor.CheckStrength (password));
 		return PasswordAdvisor.CheckStrength (password) > 1;
 	}
 
