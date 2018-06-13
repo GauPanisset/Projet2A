@@ -44,6 +44,17 @@ public class LogginManager : MonoBehaviour {
 		userLocal = userText.text;
 		passwordLocal = passwordInputField.text;
 
+		StartCoroutine (LoadMenu (userLocal));
+
+	}
+
+	private IEnumerator LoadMenu(string userLocal){
+		userLocal = userText.text;
+		passwordLocal = passwordInputField.text;
+
+		StartCoroutine (data.RequestGetPlayers (userLocal)); 
+		yield return new WaitForSeconds (1f);
+
 		if (userLocal.Length > 0) {
 			StartCoroutine (data.RequestGetPlayers (userLocal)); 
 
@@ -61,12 +72,12 @@ public class LogginManager : MonoBehaviour {
 				p.SetID (idDB);
 				p.SetLevel (levelDB);
 				p.SetScore (scoreDB);
-					
+
 				SceneManager.LoadScene ("BravoToCharlieMenu1.0");
 			} else {
 				Debug.Log ("username or password wrong");
 			}
 		}
-
 	}
+
 }
