@@ -49,14 +49,13 @@ public class LogginManager : MonoBehaviour {
 	}
 
 	private IEnumerator LoadMenu(string userLocal){
-		userLocal = userText.text;
 		passwordLocal = passwordInputField.text;
 
 		StartCoroutine (data.RequestGetPlayers (userLocal)); 
+
 		yield return new WaitForSeconds (1f);
 
 		if (userLocal.Length > 0) {
-			StartCoroutine (data.RequestGetPlayers (userLocal)); 
 
 			this.userDB = data.GetUsername ();
 			this.passwordDB = data.GetPassword ();

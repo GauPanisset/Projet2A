@@ -41,7 +41,6 @@ public class CreateLoginManager : MonoBehaviour {
 
 	void Update() {
 		passwordLocal = passwordInputField.text;
-		checkPasswordViability (passwordLocal);
 	}
 
 
@@ -49,7 +48,7 @@ public class CreateLoginManager : MonoBehaviour {
 	/// Checks the password in order to make the GUI.
 	/// </summary>
 	/// <param name="passwordLocal">Password local.</param>
-	protected void checkPasswordGUI(string password){
+	/*protected void checkPasswordGUI(string password){
 		scorePassword = PasswordAdvisor.CheckStrength (password);
 		if (oldScorePassword != scorePassword) { //Changer l'affichage - l'icône de force du password.
 			oldScorePassword = scorePassword;
@@ -59,7 +58,7 @@ public class CreateLoginManager : MonoBehaviour {
 
 			}
 		}
-	}
+	}*/
 
 	/// <summary>
 	/// This function Checks the password viability.
@@ -77,24 +76,32 @@ public class CreateLoginManager : MonoBehaviour {
 		userLocal = userText.text;
 		passwordLocal = passwordInputField.text;
 
-		if(userLocal.Length > 0){
-			StartCoroutine(data.RequestGetPlayers(userLocal)); 
-
-			this.userDB = data.GetUsername ();
-			if (userLocal == "" | passwordLocal == "")
-				Debug.LogError ("Not enough parameters");
-			else if (userDB == userLocal) { //Si le user est dans la dataBase.
-				Debug.Log("User already in database"); //TODO : Affichage plus propre.
-			} else if(userLocal.Length > 2 && userDB != userLocal){ //On peut insérer le username et le mot de passe.
-				if (checkPasswordViability (passwordLocal)) {
-					passwordHashLocal = data.Md5Sum (passwordLocal);
-					StartCoroutine (data.RequestPostPlayers (userLocal, 0, 0, 0, passwordHashLocal));
-				}
-			}
+		if (userLocal.Length > 0) {
+			StartCoroutine (CreateLogin (userLocal));
 		}
+
 		else{
 			Debug.Log("Le champ Username est obligatoire");
 		}
+	}
 
+	private IEnumerator CreateLogin(string userLocal){
+		passwordLocal = passwordInputField.text;
+
+		StartCoroutine(data.RequestGetPlayers(userLocal)); 
+
+		yield return new WaitForSeconds (1f);
+
+		this.userDB = data.GetUsername ();
+		if (userLocal == "" | passwordLocal == "")
+			Debug.LogError ("Not enough parameters");
+		else if (userDB == userLocal) { //Si le user est dans la dataBase.
+			Debug.Log("User already in database"); //TODO : Affichage plus propre.
+		} else if(userLocal.Length > 2 && userDB != userLocal){ //On peut insérer le username et le mot de passe.
+			if (checkPasswordViability (passwordLocal)) {
+				passwordHashLocal = data.Md5Sum (passwordLocal);
+				StartCoroutine (data.RequestPostPlayers (userLocal, 0, 0, 0, passwordHashLocal));
+			}
+		}
 	}
 }

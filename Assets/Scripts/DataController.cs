@@ -67,24 +67,32 @@ public class DataController {
 		if (www.isNetworkError || www.isHttpError) {
 			Debug.Log (www.error);
 		} else if ((res = www.downloadHandler.text) != "") {
+			if (res != "[]") {
+				JSONNode result = JSON.Parse (res);
 
-			JSONNode result = JSON.Parse (res);
+				this.id = int.Parse (result [0] [0]);
+				this.username = result [0] [1];
+				this.level = int.Parse (result [0] [2]);
+				this.score = int.Parse (result [0] [3]);
+				this.flat = int.Parse (result [0] [4]);
+				this.hashPassword = result [0] [5];
 
-			this.id = int.Parse (result [0][0]);
-			this.username = result [0][1];
-			this.level = int.Parse (result [0][2]);
-			this.score = int.Parse (result [0][3]);
-			this.flat = int.Parse (result [0][4]);
-			this.hashPassword = result [0][5];
-
-			Debug.Log ("Get");
+				Debug.Log ("Get");
+			} else {
+				this.id = 0;
+				this.username = "";
+				this.level = 0;
+				this.score = 0;
+				this.flat = 0;
+				this.hashPassword = "";
+			}
 
 		} else {
 			Debug.Log ("Can't get");
 		}
 	}
 
-	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat, string hassPassword){
+	public IEnumerator RequestPostPlayers(string username, int level, int score, int flat, string hashPassword){
 		string request = url + "/players";
 
 		WWWForm form = new WWWForm ();
@@ -92,6 +100,7 @@ public class DataController {
 		form.AddField ("name", username);
 		form.AddField ("level", level);
 		form.AddField ("score", score);
+		form.AddField ("flat", flat);
 		form.AddField ("hashpassword", hashPassword);
 
 		UnityWebRequest www = UnityWebRequest.Post (request, form);
