@@ -83,6 +83,7 @@ public class DiscoveringObjects : MonoBehaviour {
 				}
 			} else {
 				Debug.Log ("Victory");
+				//player.
 			}
 		} else {
 			Debug.Log ("Time is over");
@@ -139,12 +140,12 @@ public class DiscoveringObjects : MonoBehaviour {
 	private bool CheckObject(Vector2 mousePosition){
 		//Check if the player clicked on an object.
 		int ind = po.GetObjects().IndexOf(typeObject);
-		Debug.Log (ind);
 		//Debug.Log (((mousePosition [0] - listPositions[ind][0]) * (mousePosition [0] - listPositions[ind][0]) + (mousePosition [1] - listPositions[ind][1]) * (mousePosition [1] -listPositions[ind][1])));
 		int score = player.CalculScore (mousePosition, po.GetPositions()[ind]);
 		if (score > 0.02 * 500) {
 			player.ChangeScore (score);
 			scoreText.text = "Score : " + player.GetScore ();
+			StartCoroutine (po.data.RequestPatchPlayersScore (player.GetUsername(), player.GetScore()));
 			return true;
 		} else {
 			return false;

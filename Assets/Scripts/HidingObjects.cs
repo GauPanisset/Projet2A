@@ -96,9 +96,9 @@ public class HidingObjects : MonoBehaviour {
 		}
 	}
 
-	public void OnGUI(){
+	/*public void OnGUI(){
 		if(GUI.Button(new Rect(20, 250, 100, 30), "GET")){
 			StartCoroutine(data.RequestGetFlats(1));
 		}
-	}
+	}*/
 }
